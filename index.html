@@ -286,7 +286,7 @@
     </div>
     <div class="bg-white rounded-2xl p-6 mb-8 shadow-md border border-amber-200"><h2 class="text-2xl font-bold text-amber-700 mb-4"><i class="fas fa-users mr-2"></i>Customer Orders</h2><div class="overflow-x-auto"><table id="ordersTable" class="w-full text-sm border border-amber-200"><thead><tr class="border-b border-amber-200"><th class="text-left p-2">Name</th><th class="text-left p-2">Email</th><th class="text-left p-2">Phone</th><th class="text-left p-2">Product</th><th class="text-left p-2">Qty</th><th class="text-left p-2">Location</th><th class="text-left p-2">Notes</th><th class="text-left p-2">Date</th></tr></thead><tbody id="ordersList"></tbody></table></div></div>
     <div class="bg-white rounded-2xl p-6 mb-8 shadow-md border border-amber-200"><h2 class="text-2xl font-bold text-amber-700 mb-4"><i class="fas fa-edit mr-2"></i>Edit Contact Information (Public)</h2><form id="contactSettingsForm" class="space-y-4"><div><label class="block text-sm mb-1">Instagram Profile URL</label><input type="url" id="adminInstagramUrl" placeholder="https://www.instagram.com/username" class="w-full bg-gray-50 border border-amber-200 p-2 rounded-lg"></div><div><label class="block text-sm mb-1">WhatsApp Phone Number (with country code)</label><input type="tel" id="adminPhoneNumber" placeholder="+250XXXXXXXXX" class="w-full bg-gray-50 border border-amber-200 p-2 rounded-lg"></div><div class="flex gap-3"><button type="submit" class="btn-primary text-white px-5 py-2 rounded-lg font-semibold">Save Changes</button><button type="button" id="resetContactBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-2 rounded-lg">Reset to Default</button></div></form></div>
-    <div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-5 rounded-2xl shadow-md border border-amber-200"><h3 class="text-xl font-bold mb-3 text-amber-700">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></table></div></div><div id="performanceStats" class="bg-white p-5 rounded-2xl shadow-md border border-amber-200"></div></div>
+    <div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-5 rounded-2xl shadow-md border border-amber-200"><h3 class="text-xl font-bold mb-3 text-amber-700">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"><table></div></div><div id="performanceStats" class="bg-white p-5 rounded-2xl shadow-md border border-amber-200"></div></div>
 </section>
 
 <!-- Cart Sidebar -->
@@ -407,16 +407,13 @@
         if (/[A-Z]/.test(password)) strength++;
         if (/[0-9]/.test(password)) strength++;
         if (/[^A-Za-z0-9]/.test(password)) strength++;
-        
         const strengthBar = document.getElementById('passwordStrength');
         const strengthText = document.getElementById('strengthText');
-        
         if (password.length === 0) {
             strengthBar.className = 'password-strength';
             strengthText.textContent = '';
             return;
         }
-        
         if (strength <= 2) {
             strengthBar.className = 'password-strength strength-weak';
             strengthText.textContent = 'Weak password';
@@ -430,13 +427,11 @@
             strengthText.textContent = 'Strong password';
             strengthText.style.color = '#9bbf8f';
         }
-        return strength;
     }
 
     const escapeHtml = (s) => s ? s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : '';
-    
     const getFriendlyError = (code) => {
-        const map = { 
+        const map = {
             'auth/email-already-in-use': 'This email is already registered. Please login instead.',
             'auth/invalid-email': 'Please enter a valid email address.',
             'auth/weak-password': 'Password must be at least 6 characters long.',
@@ -458,7 +453,6 @@
         if (data.success) return data.data.url;
         throw new Error('Image upload failed: ' + (data.error?.message || 'Unknown error'));
     };
-    
     const uploadMultipleImages = async (files) => {
         const urls = [];
         for (const file of files) {
@@ -517,8 +511,6 @@
             if (dom.publicPhoneNumber) dom.publicPhoneNumber.innerHTML = `<a href="https://wa.me/${contactInfo.phoneNumber.replace(/\D/g,'')}" target="_blank" class="text-amber-600 underline">${contactInfo.phoneNumber}</a>`;
             if (dom.adminInstagramUrl) dom.adminInstagramUrl.value = contactInfo.instagramUrl;
             if (dom.adminPhoneNumber) dom.adminPhoneNumber.value = contactInfo.phoneNumber;
-            
-            // Update navbar WhatsApp link dynamically
             const navbarWhatsApp = document.querySelector('.navbar-contact-icons a[href*="wa.me"]');
             if (navbarWhatsApp && contactInfo.phoneNumber) {
                 navbarWhatsApp.href = `https://wa.me/${contactInfo.phoneNumber.replace(/\D/g,'')}`;
@@ -527,7 +519,6 @@
             }
         } catch (err) { console.error(err); }
     };
-    
     const saveContactInfo = async (url, phone) => {
         showLoader();
         try {
@@ -600,7 +591,6 @@
         qtyInput.value = 1;
         dom.customerModal.classList.remove('hidden');
     };
-    
     const submitOrderAndAddToCart = async (e) => {
         e.preventDefault();
         const fullName = document.getElementById('orderFullName').value.trim();
@@ -613,10 +603,8 @@
         const productName = dom.orderProductName.value;
         const productPrice = parseFloat(dom.orderProductPrice.value);
         const maxQuantity = parseInt(dom.orderMaxQuantity.value);
-        
         if (!fullName || !email || !phone || !quantity || !location) { showMessage("Please fill all required fields", "error"); return; }
         if (quantity > maxQuantity) { showMessage(`Only ${maxQuantity} item(s) available.`, "error"); return; }
-        
         showLoader();
         try {
             await addDoc(collection(db, "orders"), {
@@ -663,7 +651,6 @@
         document.getElementById('product-detail-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         addRecentlyViewed(product.id);
     };
-    
     const productCardTemplate = (p) => {
         const img = (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/300';
         const hasStock = (p.stock === 'available' && p.quantity > 0);
@@ -672,7 +659,6 @@
         const categoryBadge = p.category ? `<div class="text-xs text-amber-600 mt-1">${escapeHtml(p.category)}</div>` : '';
         return `<div class="product-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer relative" data-id="${p.id}">${statusBadge}<img src="${img}" class="h-56 w-full object-cover" loading="lazy"><div class="p-4"><h3 class="font-bold text-xl text-amber-800">${escapeHtml(p.name)}</h3>${categoryBadge}<div class="flex justify-between items-center mt-2"><span class="text-amber-700 font-bold text-lg">${p.price.toLocaleString()} RWF</span>${orderBtn}</div></div></div>`;
     };
-    
     const attachProductEvents = (container) => {
         container.querySelectorAll('.product-card').forEach(card => {
             card.onclick = (e) => {
@@ -689,21 +675,18 @@
             };
         });
     };
-    
     const addRecentlyViewed = (productId) => {
         recentlyViewedIds = recentlyViewedIds.filter(id => id !== productId);
         recentlyViewedIds.unshift(productId); if (recentlyViewedIds.length > 6) recentlyViewedIds.pop();
         localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewedIds));
         renderRecentlyViewed();
     };
-    
     const renderRecentlyViewed = () => {
         if (!dom.recentlyViewedGrid) return;
         const recent = allProducts.filter(p => recentlyViewedIds.includes(p.id));
         dom.recentlyViewedGrid.innerHTML = recent.length ? recent.map(p => productCardTemplate(p)).join('') : '<div class="col-span-full text-center text-gray-500 py-8">No recently viewed</div>';
         attachProductEvents(dom.recentlyViewedGrid);
     };
-    
     const renderRecommendations = () => {
         if (!dom.recommendationsGrid) return;
         let recs = [...allProducts];
@@ -713,7 +696,6 @@
         dom.recommendationsGrid.innerHTML = recs.map(p => productCardTemplate(p)).join('');
         attachProductEvents(dom.recommendationsGrid);
     };
-    
     const applyFiltersAndRender = () => {
         let filtered = [...allProducts];
         const search = dom.searchInput.value.toLowerCase();
@@ -729,10 +711,9 @@
         attachProductEvents(grid);
         renderRecommendations();
     };
-    
     const refreshAll = () => { applyFiltersAndRender(); renderRecentlyViewed(); renderRecommendations(); };
 
-    // Admin CRUD
+    // Admin CRUD (with fixed image handling – no data URLs stored)
     const fetchProducts = async () => {
         showLoader();
         try {
@@ -743,7 +724,6 @@
         } catch(e) { showMessage('Failed to load products', 'error'); }
         finally { hideLoader(); }
     };
-    
     const renderAdminList = async () => {
         if (!dom.productList) return;
         if (!allProducts.length) { dom.productList.innerHTML = '<div class="text-gray-500">No products</div>'; return; }
@@ -751,7 +731,6 @@
         dom.productList.querySelectorAll('.edit-prod').forEach(btn => btn.onclick = () => openEdit(btn.dataset.id));
         dom.productList.querySelectorAll('.del-prod').forEach(btn => btn.onclick = async () => { if (confirm('Delete product?')) await deleteProduct(btn.dataset.id); });
     };
-    
     const deleteProduct = async (id) => {
         showLoader();
         try {
@@ -762,7 +741,6 @@
         } catch(e) { showMessage('Delete failed', 'error'); }
         finally { hideLoader(); }
     };
-    
     const openEdit = async (id) => {
         const prod = allProducts.find(p => p.id === id);
         if (!prod) return;
@@ -779,10 +757,11 @@
         dom.cancelEdit.classList.remove('hidden');
         const previewDiv = document.getElementById('existingImagesPreview');
         if (previewDiv && prod.images) {
-            previewDiv.innerHTML = prod.images.map(url => `<div class="existing-image-item"><img src="${url}" class="image-preview"><span class="remove-image-btn" data-url="${url}"></span></div>`).join('');
+            previewDiv.innerHTML = prod.images.map(url => `<div class="existing-image-item"><img src="${url}" class="image-preview"><span class="remove-image-btn" data-url="${url}">×</span></div>`).join('');
         }
+        // Store current image URLs for later when saving (important to avoid data URLs)
+        window.currentImageUrls = prod.images ? [...prod.images] : [];
     };
-    
     const resetEdit = () => {
         editingId = null;
         dom.productForm.reset();
@@ -791,15 +770,21 @@
         dom.productFormTitle.innerText = '➕ Add New Product';
         dom.cancelEdit.classList.add('hidden');
         document.getElementById('existingImagesPreview').innerHTML = '';
+        window.currentImageUrls = [];
     };
-    
     // Event delegation for remove-image-btn (no inline onclick)
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-image-btn')) {
-            e.target.parentElement.remove();
+            const imgItem = e.target.parentElement;
+            const imgSrc = imgItem.querySelector('img').src;
+            // Remove from currentImageUrls if present
+            if (window.currentImageUrls) {
+                const index = window.currentImageUrls.indexOf(imgSrc);
+                if (index !== -1) window.currentImageUrls.splice(index, 1);
+            }
+            imgItem.remove();
         }
     });
-    
     dom.productForm.onsubmit = async (e) => {
         e.preventDefault();
         const name = dom.productName.value.trim();
@@ -815,8 +800,11 @@
         showLoader();
         try {
             let images = [];
-            const existingPreviews = document.querySelectorAll('#existingImagesPreview .existing-image-item img');
-            for (const img of existingPreviews) { if (img.src) images.push(img.src); }
+            // For edit: start with current images (from the product being edited) that were not removed
+            if (editingId && window.currentImageUrls) {
+                images = [...window.currentImageUrls];
+            }
+            // Upload new files
             if (files.length > 0) {
                 const newUrls = await uploadMultipleImages(files);
                 images.push(...newUrls);
@@ -837,9 +825,7 @@
         } catch(err) { showMessage('Upload error: ' + err.message, 'error'); }
         finally { hideLoader(); }
     };
-    
     dom.cancelEdit.onclick = resetEdit;
-    
     dom.productImages.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         const previewDiv = document.getElementById('existingImagesPreview');
@@ -848,7 +834,7 @@
             reader.onload = (event) => {
                 const imgContainer = document.createElement('div');
                 imgContainer.className = 'existing-image-item';
-                imgContainer.innerHTML = `<img src="${event.target.result}" class="image-preview"><span class="remove-image-btn"></span>`;
+                imgContainer.innerHTML = `<img src="${event.target.result}" class="image-preview"><span class="remove-image-btn">×</span>`;
                 previewDiv.appendChild(imgContainer);
             };
             reader.readAsDataURL(file);
@@ -865,7 +851,6 @@
             if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-700">📊 Performance</p><p>Users: ${snap.size}</p><p>Products: ${allProducts.length}</p><p>Orders: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
         } catch(e) { console.warn(e); }
     };
-    
     const fetchOrders = async () => {
         if (!dom.ordersList) return;
         try {
@@ -878,8 +863,7 @@
                 html += `<tr class="border-b border-gray-200"><td class="p-2">${escapeHtml(o.fullName)}</td><td class="p-2">${escapeHtml(o.email)}</td><td class="p-2">${escapeHtml(o.phone)}</td><td class="p-2">${escapeHtml(o.productName)}</td><td class="p-2">${o.quantity}</td><td class="p-2">${escapeHtml(o.location)}</td><td class="p-2">${escapeHtml(o.notes || '')}</td><td class="p-2">${new Date(o.createdAt?.toDate()).toLocaleString()}</td></tr>`;
             });
             dom.ordersList.innerHTML = html;
-        } catch(e) { console.warn(e); dom.ordersList.innerHTML = '<td><td colspan="8" class="text-center text-red-500">Error loading orders</td></tr>';
-        }
+        } catch(e) { console.warn(e); dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center text-red-500">Error loading orders</td></tr>'; }
     };
 
     // Authentication
@@ -897,7 +881,6 @@
         } catch(err) { showMessage(getFriendlyError(err.code), 'error'); }
         finally { hideLoader(); if (dom.regSubmitBtn) dom.regSubmitBtn.classList.remove('loading-btn'); }
     };
-    
     const login = async (email, pwd) => {
         showLoader();
         if (dom.loginSubmitBtn) dom.loginSubmitBtn.classList.add('loading-btn');
@@ -909,7 +892,6 @@
         } catch(err) { showMessage(getFriendlyError(err.code), 'error'); }
         finally { hideLoader(); if (dom.loginSubmitBtn) dom.loginSubmitBtn.classList.remove('loading-btn'); }
     };
-    
     const logout = () => { signOut(auth); showMessage('Logged out successfully', 'success'); showHome(); pendingProduct = null; };
 
     // Navigation
@@ -922,7 +904,6 @@
     const showUser = () => { if (!currentUser) { showMessage('Please login first', 'error'); return; } setActiveSection(dom.userSec, [dom.homeSec, dom.adminSec, dom.contactSec, dom.productDetailSec]); loadProfile(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
     const showAdmin = () => { if (userRole !== 'admin') { showMessage('Admin only', 'error'); return; } setActiveSection(dom.adminSec, [dom.homeSec, dom.userSec, dom.contactSec, dom.productDetailSec]); fetchProducts(); fetchUsers(); fetchOrders(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
     const setActiveSection = (active, others) => { active.classList.remove('hidden'); others.forEach(s => s.classList.add('hidden')); };
-    
     const loadProfile = async () => {
         if (!currentUser) return;
         try {
@@ -934,7 +915,6 @@
             } else dom.userInfo.innerHTML = '<p>Profile error</p>';
         } catch(e) { showMessage('Profile load error', 'error'); }
     };
-    
     const updateNav = () => {
         const logged = !!currentUser;
         dom.registerBtn.classList.toggle('hidden', logged);
@@ -943,7 +923,6 @@
         dom.userNav.classList.toggle('hidden', !logged);
         dom.adminNav.classList.toggle('hidden', userRole !== 'admin');
     };
-    
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         if (user) {
@@ -971,7 +950,6 @@
     dom.cartBtn.onclick = () => { dom.cartSidebar.classList.remove('translate-x-full'); dom.cartOverlay.classList.remove('hidden'); };
     dom.closeCart.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
     dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
-    
     dom.regForm.onsubmit = (e) => {
         e.preventDefault();
         const pwd = document.getElementById('regPassword').value;
@@ -979,7 +957,6 @@
         if (pwd !== cp) { showMessage('Passwords do not match', 'error'); return; }
         register(document.getElementById('regEmail').value, pwd, document.getElementById('regFirstName').value, document.getElementById('regLastName').value);
     };
-    
     dom.loginForm.onsubmit = (e) => { e.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); };
     dom.socialContainer.innerHTML = `<a href="https://www.instagram.com/cozy_lifestyle_bynina" target="_blank" class="text-pink-600 text-2xl"><i class="fab fa-instagram"></i></a> <a href="https://wa.me/250788888888" target="_blank" class="text-green-600 text-2xl"><i class="fab fa-whatsapp"></i></a> <a href="#" class="text-blue-500 text-2xl"><i class="fab fa-twitter"></i></a>`;
     dom.searchInput.addEventListener('input', () => applyFiltersAndRender());
