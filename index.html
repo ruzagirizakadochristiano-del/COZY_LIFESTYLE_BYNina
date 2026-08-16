@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COZY LIFESTYLE BY Nina | Modern Clothing Store</title>
     <link rel="icon" type="image/png" href="logo.png" />
+    <!-- Tailwind CDN – safe for development; ignore the warning -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
@@ -23,8 +24,6 @@
             --accent-hover: #e0b08c;
             --skeleton-bg: #3d322a;
             --hero-overlay: rgba(30, 26, 22, 0.95);
-            --bg-light: #fdf8f0;
-            --text-light: #4a3b2c;
         }
         [data-theme="light"] {
             --bg: #fdf8f0;
@@ -46,6 +45,8 @@
             color: var(--text);
             font-family: 'Inter', system-ui, sans-serif;
             transition: background 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
         }
         body::before {
             content: '';
@@ -60,16 +61,88 @@
             z-index: -1;
         }
 
+        /* ===== LIGHTBOX ===== */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            animation: fadeIn 0.3s ease;
+        }
+        #lightbox.active {
+            display: flex;
+        }
+        #lightbox img {
+            max-width: 92%;
+            max-height: 92%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+            cursor: default;
+        }
+        #lightbox .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 44px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            z-index: 10000;
+        }
+        #lightbox .close-lightbox:hover {
+            transform: scale(1.2);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== NAVBAR ===== */
         nav {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
             transition: background 0.3s, border-color 0.3s;
+            padding: 0.75rem 1rem;
         }
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            color: var(--text);
+        }
+        .nav-btn:hover {
+            color: var(--accent);
+        }
+
+        /* ===== FILTER BAR ===== */
         .filter-bar {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
+            padding: 1rem;
+            border-radius: 1rem;
         }
+        .filter-bar .flex-wrap {
+            gap: 0.75rem;
+        }
+        .filter-bar input,
+        .filter-bar select {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        /* ===== PRODUCT CARDS ===== */
         .product-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -85,13 +158,41 @@
             box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.4);
             border-color: var(--accent);
         }
+        .product-card img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        @media (max-width: 640px) {
+            .product-card img {
+                height: 160px;
+            }
+            .product-card .p-4 {
+                padding: 0.75rem;
+            }
+            .product-card h3 {
+                font-size: 1.1rem;
+            }
+            .product-card .text-lg {
+                font-size: 1rem;
+            }
+            .product-card .btn-primary,
+            .product-card .btn-outline {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+        }
 
+        /* ===== BUTTONS ===== */
         .btn-primary {
             background: var(--accent);
             color: #fff;
             border-radius: 9999px;
             font-weight: 500;
             transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem 1.2rem;
         }
         .btn-primary:hover {
             background: var(--accent-hover);
@@ -104,12 +205,16 @@
             background: transparent;
             border-radius: 9999px;
             transition: all 0.2s;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
         }
         .btn-outline:hover {
             background: var(--accent);
             color: #fff;
         }
 
+        /* ===== INPUTS ===== */
         input,
         select,
         textarea {
@@ -117,6 +222,9 @@
             border-color: var(--border) !important;
             color: var(--text) !important;
             transition: border-color 0.2s, box-shadow 0.2s;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
         }
         input:focus,
         select:focus,
@@ -126,102 +234,82 @@
             outline: none;
         }
 
-        .navbar-contact-icons a {
-            color: var(--text-muted);
-        }
-        .navbar-contact-icons a:hover {
-            color: var(--accent);
-        }
-
-        /* ===== DARK TOGGLE ===== */
-        #themeToggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text);
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        #themeToggle:hover {
-            color: var(--accent);
-        }
-
-        /* ===== SKELETON ===== */
-        .skeleton {
-            background: var(--skeleton-bg);
-            border-radius: 8px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 0.6;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-        .skeleton-card {
+        /* ===== DETAIL PAGE ===== */
+        .detail-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 1.5rem;
-            overflow: hidden;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
         }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .detail-image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
         }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
+        .detail-main-img {
+            max-height: 350px;
+            width: 100%;
+            object-fit: contain;
+            border-radius: 12px;
             background: var(--bg);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 8px;
+        .detail-main-img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .price-large {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        [data-theme="light"] .price-large {
+            color: #6b4c3b;
+        }
+        @media (max-width: 640px) {
+            .detail-card {
+                padding: 1rem;
+            }
+            .detail-image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+            .detail-main-img {
+                max-height: 200px;
+            }
+            .price-large {
+                font-size: 1.5rem;
+            }
         }
 
         /* ===== HERO ===== */
         .hero-bg {
             background: linear-gradient(135deg, #2c241e 0%, #3d322a 100%);
             color: #f0e2d4;
+            padding: 4rem 1rem;
         }
         [data-theme="light"] .hero-bg {
             background: linear-gradient(135deg, #f7e8d0 0%, #f3d9c4 100%);
             color: #6b4c3b;
         }
-        [data-theme="light"] .hero-bg .btn-outline {
-            border-color: #b97f5c;
-            color: #b97f5c;
+        .hero-bg h1 {
+            font-size: 2.8rem;
         }
-        [data-theme="light"] .hero-bg .btn-outline:hover {
-            background: #b97f5c;
-            color: #fff;
+        @media (min-width: 768px) {
+            .hero-bg h1 {
+                font-size: 4.5rem;
+            }
         }
-        .hero-bg .btn-outline {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .hero-bg .btn-outline:hover {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        /* ===== LOADER ===== */
-        .loader-overlay {
-            background: var(--hero-overlay);
-            backdrop-filter: blur(4px);
+        @media (max-width: 480px) {
+            .hero-bg h1 {
+                font-size: 2rem;
+            }
+            .hero-bg .btn-primary,
+            .hero-bg .btn-outline {
+                font-size: 0.9rem;
+                padding: 0.5rem 1.2rem;
+            }
         }
 
         /* ===== WISHLIST HEART ===== */
@@ -247,54 +335,21 @@
             color: #e74c3c;
         }
 
-        /* ===== COUPON ===== */
-        #couponInput {
-            border: 1px solid var(--border);
-            border-radius: 9999px;
-            padding: 0.5rem 1rem;
-            width: 100%;
-            background: var(--bg) !important;
-            color: var(--text) !important;
-        }
-        #applyCouponBtn {
-            border-radius: 9999px;
-            background: var(--accent);
-            color: white;
-            padding: 0.5rem 1.2rem;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        #applyCouponBtn:hover {
-            background: var(--accent-hover);
-        }
-        .coupon-discount {
-            color: #27ae60;
-            font-weight: bold;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 640px) {
-            .navbar-contact-icons {
-                display: none;
-            }
-            .hero-bg h1 {
-                font-size: 2.5rem;
-            }
-            .product-card {
-                border-radius: 1rem;
-            }
-        }
-
         /* ===== STATUS BADGES ===== */
         .status-available {
             background: #9bbf8f;
             color: #2c4a1e;
             font-weight: bold;
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
         }
         .status-sold {
             background: #e0a890;
             color: #7a3e2a;
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
         }
         .info-item {
             background: #f9f0e8;
@@ -308,84 +363,7 @@
             color: #bcaa96;
         }
 
-        /* ===== IMAGE PREVIEW ===== */
-        .image-preview {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin: 4px;
-            border: 2px solid var(--accent);
-        }
-        .detail-image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 8px;
-        }
-        .detail-main-img {
-            max-height: 450px;
-            width: 100%;
-            object-fit: contain;
-            border-radius: 16px;
-            background: var(--bg);
-        }
-        .price-large {
-            font-size: 2.4rem;
-            font-weight: bold;
-            color: var(--accent);
-        }
-        [data-theme="light"] .price-large {
-            color: #6b4c3b;
-        }
-
-        /* ===== PRODUCT DETAIL CARD ===== */
-        .detail-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-        }
-
-        /* ===== OTHER ===== */
-        .existing-image-item {
-            position: relative;
-            display: inline-block;
-        }
-        .remove-image-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #e0a890;
-            color: white;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .password-strength {
-            height: 4px;
-            margin-top: 8px;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-        .strength-weak {
-            background: #e0a890;
-            width: 33%;
-        }
-        .strength-medium {
-            background: var(--accent);
-            width: 66%;
-        }
-        .strength-strong {
-            background: #9bbf8f;
-            width: 100%;
-        }
+        /* ===== PAGINATION ===== */
         .pagination-btn {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
@@ -393,6 +371,7 @@
             padding: 0.5rem 1rem;
             border-radius: 8px;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .pagination-btn:hover {
             background: var(--accent);
@@ -402,6 +381,8 @@
             opacity: 0.4;
             cursor: not-allowed;
         }
+
+        /* ===== NOTIFICATIONS ===== */
         .notification {
             position: fixed;
             top: 20px;
@@ -428,14 +409,17 @@
             border-left-color: var(--accent);
         }
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== LOADER ===== */
+        .loader-overlay {
+            background: var(--hero-overlay);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .spinner {
             width: 60px;
@@ -446,17 +430,124 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin {
-            100% {
-                transform: rotate(360deg);
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE TWEAKS ===== */
+        .container-custom {
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        @media (max-width: 640px) {
+            .container-custom {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
             }
+            .filter-bar .flex-wrap {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-bar .w-48 {
+                width: 100%;
+            }
+            .filter-bar .flex-1 {
+                min-width: unset;
+            }
+            .navbar-contact-icons {
+                display: none;
+            }
+            nav .flex-wrap {
+                gap: 0.5rem;
+            }
+            nav .text-2xl {
+                font-size: 1.2rem;
+            }
+            #cartSidebar {
+                width: 100%;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 8px;
+        }
+
+        /* ===== OTHER ===== */
+        .password-strength {
+            height: 4px;
+            margin-top: 8px;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .strength-weak {
+            background: #e0a890;
+            width: 33%;
+        }
+        .strength-medium {
+            background: var(--accent);
+            width: 66%;
+        }
+        .strength-strong {
+            background: #9bbf8f;
+            width: 100%;
+        }
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 4px;
+            border: 2px solid var(--accent);
+        }
+        .existing-image-item {
+            position: relative;
+            display: inline-block;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e0a890;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <!-- ===== GLOBAL LOADER ===== -->
-    <div id="globalLoader" class="loader-overlay"><div class="spinner"></div></div>
+    <div id="globalLoader" class="loader-overlay fixed inset-0 z-50 hidden"><div class="spinner"></div></div>
     <div id="notificationContainer"></div>
+
+    <!-- ===== LIGHTBOX ===== -->
+    <div id="lightbox" class="fixed inset-0 z-50 hidden" onclick="closeLightbox()">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="Product image">
+    </div>
 
     <!-- ===== NAVBAR ===== -->
     <nav class="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-30 border-b border-amber-200 flex-wrap gap-3">
@@ -465,14 +556,14 @@
                 <i class="fas fa-tshirt text-amber-600 mr-2"></i>COZY <span class="text-amber-700">LIFESTYLE</span><span class="text-amber-500"> BY Nina</span>
             </div>
             <button id="themeToggle" class="ml-2" aria-label="Toggle dark mode">
-                <i class="fas fa-sun"></i> <!-- default dark, so show sun -->
+                <i class="fas fa-sun"></i>
             </button>
         </div>
         <div class="flex items-center gap-4 flex-wrap">
-            <button class="nav-btn hover:text-amber-600 font-medium text-gray-700" data-nav="home">Home</button>
-            <button class="nav-btn hover:text-amber-600 text-gray-700" data-nav="contact">Contact</button>
-            <button class="nav-btn hover:text-amber-600 hidden text-gray-700" data-nav="user">My Panel</button>
-            <button class="nav-btn hover:text-amber-600 hidden text-gray-700" data-nav="admin">Admin</button>
+            <button class="nav-btn hover:text-amber-600 font-medium" data-nav="home">Home</button>
+            <button class="nav-btn hover:text-amber-600" data-nav="contact">Contact</button>
+            <button class="nav-btn hover:text-amber-600 hidden" data-nav="user">My Panel</button>
+            <button class="nav-btn hover:text-amber-600 hidden" data-nav="admin">Admin</button>
             <button id="wishlistNavBtn" class="relative hover:text-amber-600 text-gray-700 hidden">
                 <i class="fas fa-heart text-xl"></i>
                 <span id="wishlistCount" class="absolute -top-2 -right-3 bg-amber-600 text-white text-xs font-bold rounded-full px-1.5 min-w-[20px] text-center">0</span>
@@ -919,6 +1010,8 @@
             pageInfo: $('pageInfo'),
             productsGrid: $('productsGrid'),
             loader: $('globalLoader'),
+            lightbox: $('lightbox'),
+            lightboxImg: $('lightboxImg'),
         };
 
         // ===== STATE =====
@@ -967,10 +1060,24 @@
             return map[code] || `Error: ${code}`;
         }
 
+        // ===== LIGHTBOX =====
+        window.openLightbox = function(src) {
+            dom.lightboxImg.src = src;
+            dom.lightbox.classList.add('active');
+            dom.lightbox.style.display = 'flex';
+        };
+        window.closeLightbox = function() {
+            dom.lightbox.classList.remove('active');
+            dom.lightbox.style.display = 'none';
+        };
+        // Close on overlay click
+        dom.lightbox.addEventListener('click', (e) => {
+            if (e.target === dom.lightbox) closeLightbox();
+        });
+
         // ===== DARK MODE =====
         (function initTheme() {
-            // default dark is set via <html data-theme="dark">
-            dom.themeToggle.innerHTML = '<i class="fas fa-sun"></i>'; // show sun because we are in dark
+            dom.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             dom.themeToggle.addEventListener('click', () => {
                 const current = document.documentElement.getAttribute('data-theme');
                 const next = current === 'dark' ? 'light' : 'dark';
@@ -1015,16 +1122,10 @@
             if (/[^A-Za-z0-9]/.test(pw)) strength++;
             const bar = document.getElementById('passwordStrength');
             const text = document.getElementById('strengthText');
-            if (pw.length === 0) { bar.className = 'password-strength';
-                text.textContent = ''; return; }
-            if (strength <= 2) { bar.className = 'password-strength strength-weak';
-                text.textContent = 'Weak password';
-                text.style.color = '#e0a890'; } else if (strength <= 4) { bar.className =
-                    'password-strength strength-medium';
-                text.textContent = 'Medium password';
-                text.style.color = '#d49c6c'; } else { bar.className = 'password-strength strength-strong';
-                text.textContent = 'Strong password';
-                text.style.color = '#9bbf8f'; }
+            if (pw.length === 0) { bar.className = 'password-strength'; text.textContent = ''; return; }
+            if (strength <= 2) { bar.className = 'password-strength strength-weak'; text.textContent = 'Weak password'; text.style.color = '#e0a890'; }
+            else if (strength <= 4) { bar.className = 'password-strength strength-medium'; text.textContent = 'Medium password'; text.style.color = '#d49c6c'; }
+            else { bar.className = 'password-strength strength-strong'; text.textContent = 'Strong password'; text.style.color = '#9bbf8f'; }
         });
 
         // ===== CONTACT INFO =====
@@ -1034,13 +1135,12 @@
                 const docRef = doc(db, "settings", "contactInfo");
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) contactInfo = docSnap.data();
-                else { contactInfo = { instagramUrl: "https://www.instagram.com/cozy_lifestyle_bynina",
-                        phoneNumber: "+250788888888" };
-                    await setDoc(docRef, contactInfo); }
-                dom.publicInstagramLink.innerHTML =
-                    `<a href="${contactInfo.instagramUrl}" target="_blank" class="text-amber-600 underline">${contactInfo.instagramUrl}</a>`;
-                dom.publicPhoneNumber.innerHTML =
-                    `<a href="https://wa.me/${contactInfo.phoneNumber.replace(/\D/g,'')}" target="_blank" class="text-amber-600 underline">${contactInfo.phoneNumber}</a>`;
+                else {
+                    contactInfo = { instagramUrl: "https://www.instagram.com/cozy_lifestyle_bynina", phoneNumber: "+250788888888" };
+                    await setDoc(docRef, contactInfo);
+                }
+                dom.publicInstagramLink.innerHTML = `<a href="${contactInfo.instagramUrl}" target="_blank" class="text-amber-600 underline">${contactInfo.instagramUrl}</a>`;
+                dom.publicPhoneNumber.innerHTML = `<a href="https://wa.me/${contactInfo.phoneNumber.replace(/\D/g,'')}" target="_blank" class="text-amber-600 underline">${contactInfo.phoneNumber}</a>`;
                 dom.adminInstagramUrl.value = contactInfo.instagramUrl;
                 dom.adminPhoneNumber.value = contactInfo.phoneNumber;
                 const navbarWhatsApp = document.querySelector('.navbar-contact-icons a[href*="wa.me"]');
@@ -1056,17 +1156,14 @@
             try {
                 await setDoc(doc(db, "settings", "contactInfo"), { instagramUrl: url, phoneNumber: phone });
                 contactInfo = { instagramUrl: url, phoneNumber: phone };
-                dom.publicInstagramLink.innerHTML =
-                    `<a href="${url}" target="_blank" class="text-amber-600 underline">${url}</a>`;
-                dom.publicPhoneNumber.innerHTML =
-                    `<a href="https://wa.me/${phone.replace(/\D/g,'')}" target="_blank" class="text-amber-600 underline">${phone}</a>`;
+                dom.publicInstagramLink.innerHTML = `<a href="${url}" target="_blank" class="text-amber-600 underline">${url}</a>`;
+                dom.publicPhoneNumber.innerHTML = `<a href="https://wa.me/${phone.replace(/\D/g,'')}" target="_blank" class="text-amber-600 underline">${phone}</a>`;
                 showMessage("Contact info updated", "success");
             } catch (err) { showMessage("Update failed", "error"); } finally { hideLoader(); }
         };
         dom.contactSettingsForm.onsubmit = async (e) => {
             e.preventDefault();
-            const url = dom.adminInstagramUrl.value.trim(),
-                phone = dom.adminPhoneNumber.value.trim();
+            const url = dom.adminInstagramUrl.value.trim(), phone = dom.adminPhoneNumber.value.trim();
             if (!url || !phone) { showMessage('Both fields required', 'error'); return; }
             await saveContactInfo(url, phone);
         };
@@ -1075,13 +1172,10 @@
         };
 
         // ===== CART =====
-        const saveCart = () => { localStorage.setItem('cozyLifestyleCart', JSON.stringify(cart));
-            updateCartUI(); };
-        const loadCart = () => { cart = JSON.parse(localStorage.getItem('cozyLifestyleCart') || '[]');
-            updateCartUI(); };
+        const saveCart = () => { localStorage.setItem('cozyLifestyleCart', JSON.stringify(cart)); updateCartUI(); };
+        const loadCart = () => { cart = JSON.parse(localStorage.getItem('cozyLifestyleCart') || '[]'); updateCartUI(); };
         const updateCartUI = () => {
-            let total = 0,
-                count = 0;
+            let total = 0, count = 0;
             dom.cartItemsDiv.innerHTML = '';
             if (!cart.length) dom.cartItemsDiv.innerHTML = '<div class="text-center py-6 text-gray-400">Your cart is empty</div>';
             else cart.forEach((item, idx) => {
@@ -1098,8 +1192,8 @@
             dom.cartItemsDiv.querySelectorAll('.cart-dec, .cart-inc, .cart-del').forEach(btn => {
                 btn.onclick = () => {
                     const i = parseInt(btn.dataset.idx);
-                    if (btn.classList.contains('cart-dec')) { if (cart[i].quantity > 1) cart[i].quantity--;
-                        else cart.splice(i, 1); } else if (btn.classList.contains('cart-inc')) cart[i].quantity++;
+                    if (btn.classList.contains('cart-dec')) { if (cart[i].quantity > 1) cart[i].quantity--; else cart.splice(i, 1); }
+                    else if (btn.classList.contains('cart-inc')) cart[i].quantity++;
                     else if (btn.classList.contains('cart-del')) cart.splice(i, 1);
                     saveCart();
                     applyFiltersAndRender();
@@ -1127,25 +1221,18 @@
 
         dom.applyCouponBtn.onclick = async () => {
             const code = dom.couponInput.value.trim().toUpperCase();
-            if (!code) { dom.couponMessage.innerText = 'Enter a coupon code.';
-                dom.couponMessage.style.color = 'red'; return; }
+            if (!code) { dom.couponMessage.innerText = 'Enter a coupon code.'; dom.couponMessage.style.color = 'red'; return; }
             try {
                 const snap = await getDoc(doc(db, 'coupons', code));
-                if (!snap.exists()) { dom.couponMessage.innerText = 'Invalid coupon code.';
-                    dom.couponMessage.style.color = 'red'; return; }
+                if (!snap.exists()) { dom.couponMessage.innerText = 'Invalid coupon code.'; dom.couponMessage.style.color = 'red'; return; }
                 const data = snap.data();
-                if (data.expiry && data.expiry.toDate() < new Date()) { dom.couponMessage.innerText =
-                        'Coupon expired.';
-                    dom.couponMessage.style.color = 'red'; return; }
-                if (data.usedBy && data.usedBy.includes(currentUser?.uid)) { dom.couponMessage.innerText =
-                        'You already used this coupon.';
-                    dom.couponMessage.style.color = 'red'; return; }
+                if (data.expiry && data.expiry.toDate() < new Date()) { dom.couponMessage.innerText = 'Coupon expired.'; dom.couponMessage.style.color = 'red'; return; }
+                if (data.usedBy && data.usedBy.includes(currentUser?.uid)) { dom.couponMessage.innerText = 'You already used this coupon.'; dom.couponMessage.style.color = 'red'; return; }
                 appliedCoupon = { id: code, discountType: data.discountType, discountValue: data.discountValue };
                 dom.couponMessage.innerText = `Coupon applied! ${data.discountType === 'percentage' ? data.discountValue + '%' : data.discountValue + ' RWF'} off.`;
                 dom.couponMessage.style.color = 'green';
                 updateCartUI();
-            } catch (e) { dom.couponMessage.innerText = 'Error applying coupon.';
-                dom.couponMessage.style.color = 'red'; }
+            } catch (e) { dom.couponMessage.innerText = 'Error applying coupon.'; dom.couponMessage.style.color = 'red'; }
         };
 
         // ===== CHECKOUT =====
@@ -1155,8 +1242,7 @@
             let total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
             let discount = 0;
             if (appliedCoupon) {
-                discount = appliedCoupon.discountType === 'percentage' ? total * (appliedCoupon.discountValue / 100) :
-                    appliedCoupon.discountValue;
+                discount = appliedCoupon.discountType === 'percentage' ? total * (appliedCoupon.discountValue / 100) : appliedCoupon.discountValue;
                 if (discount > total) discount = total;
             }
             const finalTotal = total - discount;
@@ -1205,8 +1291,7 @@
 
         // ===== WISHLIST =====
         const loadWishlist = async () => {
-            if (!currentUser) { wishlistIds = [];
-                dom.wishlistNavBtn.classList.add('hidden'); return; }
+            if (!currentUser) { wishlistIds = []; dom.wishlistNavBtn.classList.add('hidden'); return; }
             try {
                 const snap = await getDoc(doc(db, 'wishlists', currentUser.uid));
                 wishlistIds = snap.exists() ? snap.data().productIds || [] : [];
@@ -1233,8 +1318,7 @@
         const renderWishlist = () => {
             if (!dom.wishlistGrid) return;
             const wishlistProducts = allProducts.filter(p => wishlistIds.includes(p.id));
-            dom.wishlistGrid.innerHTML = wishlistProducts.length ? wishlistProducts.map(p => productCardTemplate(p))
-                .join('') : '<div class="col-span-full text-center text-gray-500 py-8">Your wishlist is empty.</div>';
+            dom.wishlistGrid.innerHTML = wishlistProducts.length ? wishlistProducts.map(p => productCardTemplate(p)).join('') : '<div class="col-span-full text-center text-gray-500 py-8">Your wishlist is empty.</div>';
             attachProductEvents(dom.wishlistGrid);
         };
         dom.wishlistNavBtn.onclick = () => {
@@ -1255,23 +1339,18 @@
         const loadReviews = async (productId) => {
             currentProductId = productId;
             try {
-                const q = query(collection(db, 'reviews'), where('productId', '==', productId), orderBy('createdAt',
-                    'desc'));
+                const q = query(collection(db, 'reviews'), where('productId', '==', productId), orderBy('createdAt', 'desc'));
                 const snap = await getDocs(q);
-                if (snap.empty) { dom.reviewList.innerHTML =
-                    '<p class="text-gray-500">No reviews yet. Be the first!</p>'; return; }
+                if (snap.empty) { dom.reviewList.innerHTML = '<p class="text-gray-500">No reviews yet. Be the first!</p>'; return; }
                 let avg = 0;
                 let html = '';
                 snap.forEach(d => {
                     const r = d.data();
                     avg += r.rating;
-                    html +=
-                        `<div class="border-b border-amber-200 pb-2"><strong>${escapeHtml(r.userName)}</strong> ⭐ ${r.rating}/5<br><span class="text-sm text-gray-600">${escapeHtml(r.comment)}</span><br><span class="text-xs text-gray-400">${new Date(r.createdAt?.toDate()).toLocaleDateString()}</span></div>`;
+                    html += `<div class="border-b border-amber-200 pb-2"><strong>${escapeHtml(r.userName)}</strong> ⭐ ${r.rating}/5<br><span class="text-sm text-gray-600">${escapeHtml(r.comment)}</span><br><span class="text-xs text-gray-400">${new Date(r.createdAt?.toDate()).toLocaleDateString()}</span></div>`;
                 });
                 avg = (avg / snap.size).toFixed(1);
-                dom.reviewList.innerHTML =
-                    `<div class="flex justify-between"><span>Average rating: ⭐ ${avg}/5 (${snap.size} reviews)</span></div>` +
-                    html;
+                dom.reviewList.innerHTML = `<div class="flex justify-between"><span>Average rating: ⭐ ${avg}/5 (${snap.size} reviews)</span></div>` + html;
             } catch (e) { dom.reviewList.innerHTML = '<p class="text-red-500">Error loading reviews.</p>'; }
         };
         dom.reviewForm.onsubmit = async (e) => {
@@ -1307,9 +1386,7 @@
                     return `<div class="flex justify-between items-center border-b border-gray-200 py-2"><span><strong>${escapeHtml(d.id)}</strong> - ${c.discountType === 'percentage' ? c.discountValue + '%' : c.discountValue + ' RWF'} ${c.expiry ? 'expires ' + new Date(c.expiry.toDate()).toLocaleDateString() : ''}</span><button class="del-coupon text-red-500" data-id="${d.id}">Delete</button></div>`;
                 }).join('');
                 dom.couponList.querySelectorAll('.del-coupon').forEach(btn => btn.onclick = async () => {
-                    if (confirm('Delete coupon?')) { await deleteDoc(doc(db, 'coupons', btn.dataset.id));
-                        loadCoupons();
-                        showMessage('Coupon deleted', 'success'); }
+                    if (confirm('Delete coupon?')) { await deleteDoc(doc(db, 'coupons', btn.dataset.id)); loadCoupons(); showMessage('Coupon deleted', 'success'); }
                 });
             } catch (e) { console.warn(e); }
         };
@@ -1338,17 +1415,11 @@
         const productCardTemplate = (p) => {
             const img = (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/300';
             const hasStock = (p.stock === 'available' && p.quantity > 0);
-            const statusBadge = hasStock ?
-                `<span class="absolute top-2 right-2 status-available text-xs px-2 py-1 rounded-full">In Stock</span>` :
-                `<span class="absolute top-2 right-2 status-sold text-xs px-2 py-1 rounded-full">Out of Stock</span>`;
+            const statusBadge = hasStock ? `<span class="absolute top-2 right-2 status-available text-xs px-2 py-1 rounded-full">In Stock</span>` : `<span class="absolute top-2 right-2 status-sold text-xs px-2 py-1 rounded-full">Out of Stock</span>`;
             const wishlisted = wishlistIds.includes(p.id);
-            const orderBtn = hasStock ?
-                `<button class="add-cart-trigger btn-primary text-white font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Buy</button>` :
-                `<button class="bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded-full text-sm cursor-not-allowed" disabled>Sold Out</button>`;
-            const detailBtn =
-                `<button class="view-detail-trigger btn-outline text-xs font-semibold px-3 py-1 rounded-full" data-id="${p.id}">View Details</button>`;
-            const categoryBadge = p.category ? `<div class="text-xs text-amber-600 mt-1">${escapeHtml(p.category)}</div>` :
-                '';
+            const orderBtn = hasStock ? `<button class="add-cart-trigger btn-primary text-white font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Buy</button>` : `<button class="bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded-full text-sm cursor-not-allowed" disabled>Sold Out</button>`;
+            const detailBtn = `<button class="view-detail-trigger btn-outline text-xs font-semibold px-3 py-1 rounded-full" data-id="${p.id}">View Details</button>`;
+            const categoryBadge = p.category ? `<div class="text-xs text-amber-600 mt-1">${escapeHtml(p.category)}</div>` : '';
             return `<div class="product-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer relative" data-id="${p.id}" style="animation-delay:${Math.random()*0.2}s">
                 ${statusBadge}
                 <button class="wishlist-btn absolute top-2 left-2 z-10 ${wishlisted ? 'active' : ''}" data-id="${p.id}"><i class="fas fa-heart"></i></button>
@@ -1368,11 +1439,9 @@
         };
 
         const attachProductEvents = (container) => {
-            // Click on card (except on buttons) triggers detail
             container.querySelectorAll('.product-card').forEach(card => {
                 card.onclick = (e) => {
-                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-cart-trigger') || e.target
-                        .closest('.view-detail-trigger')) return;
+                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-cart-trigger') || e.target.closest('.view-detail-trigger')) return;
                     showProductDetail(card.dataset.id);
                 };
             });
@@ -1421,9 +1490,7 @@
                 dom.pageInfo.innerText = `Page ${currentPage}`;
                 allProducts = products;
                 applyFiltersAndRender();
-                if (userRole === 'admin') { renderAdminList();
-                    fetchUsers();
-                    fetchOrders(); }
+                if (userRole === 'admin') { renderAdminList(); fetchUsers(); fetchOrders(); }
                 loadWishlist();
                 setCache(allProducts);
             } catch (e) { showMessage('Failed to load page', 'error'); } finally { hideLoader(); }
@@ -1436,8 +1503,7 @@
         const applyFiltersAndRender = () => {
             let filtered = [...allProducts];
             const search = dom.searchInput.value.toLowerCase();
-            if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || (p.category && p
-                .category.toLowerCase().includes(search)));
+            if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || (p.category && p.category.toLowerCase().includes(search)));
             const min = parseFloat(dom.minPrice.value);
             if (!isNaN(min)) filtered = filtered.filter(p => p.price >= min);
             const max = parseFloat(dom.maxPrice.value);
@@ -1448,8 +1514,7 @@
             if (sort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
             else if (sort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
             filteredProducts = filtered;
-            dom.productsGrid.innerHTML = filteredProducts.length ? filteredProducts.map(p => productCardTemplate(p))
-                .join('') : '<div class="col-span-full text-center text-gray-500 py-10">No products found</div>';
+            dom.productsGrid.innerHTML = filteredProducts.length ? filteredProducts.map(p => productCardTemplate(p)).join('') : '<div class="col-span-full text-center text-gray-500 py-10">No products found</div>';
             attachProductEvents(dom.productsGrid);
             updateWishlistUI();
             renderRecommendations();
@@ -1480,8 +1545,7 @@
         };
         const renderRecentlyViewed = () => {
             const recent = allProducts.filter(p => recentlyViewedIds.includes(p.id));
-            dom.recentlyViewedGrid.innerHTML = recent.length ? recent.map(p => productCardTemplate(p)).join('') :
-                '<div class="col-span-full text-center text-gray-500 py-8">No recently viewed</div>';
+            dom.recentlyViewedGrid.innerHTML = recent.length ? recent.map(p => productCardTemplate(p)).join('') : '<div class="col-span-full text-center text-gray-500 py-8">No recently viewed</div>';
             attachProductEvents(dom.recentlyViewedGrid);
         };
 
@@ -1495,34 +1559,26 @@
             attachProductEvents(dom.recommendationsGrid);
         };
 
-        // ===== PRODUCT DETAIL (enhanced) =====
+        // ===== PRODUCT DETAIL (enhanced with lightbox) =====
         const showProductDetail = (productId) => {
             const product = allProducts.find(p => p.id === productId);
             if (!product) return;
-            const statusBadge = product.stock === 'available' ?
-                '<span class="status-available px-3 py-1 rounded-full text-sm"><i class="fas fa-check-circle mr-1"></i>In Stock</span>' :
-                '<span class="status-sold px-3 py-1 rounded-full text-sm"><i class="fas fa-times-circle mr-1"></i>Out of Stock</span>';
-            const orderBtn = (product.stock === 'available' && product.quantity > 0) ?
-                `<button class="add-to-cart-detail btn-primary text-white px-6 py-3 rounded-full font-semibold text-lg mt-4" data-id="${product.id}"><i class="fas fa-cart-plus mr-2"></i>Add to Cart</button>` :
-                `<button class="bg-gray-500 text-white px-6 py-3 rounded-full font-semibold text-lg mt-4 cursor-not-allowed" disabled>Out of Stock</button>`;
-            // Image gallery
-            const imagesHtml = product.images && product.images.length ?
-                `<div class="detail-image-grid">${product.images.map(img => `<img src="${img}" class="detail-main-img rounded-lg shadow-md" alt="Product image">`).join('')}</div>` :
-                `<img src="https://via.placeholder.com/600x400" class="detail-main-img rounded-lg">`;
+            const statusBadge = product.stock === 'available' ? '<span class="status-available px-3 py-1 rounded-full text-sm"><i class="fas fa-check-circle mr-1"></i>In Stock</span>' : '<span class="status-sold px-3 py-1 rounded-full text-sm"><i class="fas fa-times-circle mr-1"></i>Out of Stock</span>';
+            const orderBtn = (product.stock === 'available' && product.quantity > 0) ? `<button class="add-to-cart-detail btn-primary text-white px-6 py-3 rounded-full font-semibold text-lg mt-4" data-id="${product.id}"><i class="fas fa-cart-plus mr-2"></i>Add to Cart</button>` : `<button class="bg-gray-500 text-white px-6 py-3 rounded-full font-semibold text-lg mt-4 cursor-not-allowed" disabled>Out of Stock</button>`;
+            // Image gallery with click to zoom
+            const imagesHtml = product.images && product.images.length ? 
+                `<div class="detail-image-grid">${product.images.map(img => `<img src="${img}" class="detail-main-img rounded-lg shadow-md" alt="Product image" onclick="openLightbox('${img}')">`).join('')}</div>` :
+                `<img src="https://via.placeholder.com/600x400" class="detail-main-img rounded-lg" onclick="openLightbox('https://via.placeholder.com/600x400')">`;
             // Size & color chips
-            const sizeInfo = product.sizes ?
-                `<div class="flex flex-wrap gap-2 mt-3"><span class="text-sm font-medium text-amber-400">Sizes:</span> ${product.sizes.split(',').map(s => `<span class="bg-amber-800/30 px-3 py-1 rounded-full text-xs border border-amber-600">${s.trim()}</span>`).join('')}</div>` :
-                '';
-            const colorInfo = product.colors ?
-                `<div class="flex flex-wrap gap-2 mt-2"><span class="text-sm font-medium text-amber-400">Colors:</span> ${product.colors.split(',').map(c => `<span class="bg-amber-800/30 px-3 py-1 rounded-full text-xs border border-amber-600">${c.trim()}</span>`).join('')}</div>` :
-                '';
-            const extraInfo =
-                `<div class="mt-3 flex flex-wrap gap-2"><span class="info-item"><i class="fas fa-tag mr-1"></i> ${product.category || 'Uncategorized'}</span> ${sizeInfo} ${colorInfo}</div>`;
+            const sizeInfo = product.sizes ? `<div class="flex flex-wrap gap-2 mt-3"><span class="text-sm font-medium text-amber-400">Sizes:</span> ${product.sizes.split(',').map(s => `<span class="bg-amber-800/30 px-3 py-1 rounded-full text-xs border border-amber-600">${s.trim()}</span>`).join('')}</div>` : '';
+            const colorInfo = product.colors ? `<div class="flex flex-wrap gap-2 mt-2"><span class="text-sm font-medium text-amber-400">Colors:</span> ${product.colors.split(',').map(c => `<span class="bg-amber-800/30 px-3 py-1 rounded-full text-xs border border-amber-600">${c.trim()}</span>`).join('')}</div>` : '';
+            const extraInfo = `<div class="mt-3 flex flex-wrap gap-2"><span class="info-item"><i class="fas fa-tag mr-1"></i> ${product.category || 'Uncategorized'}</span> ${sizeInfo} ${colorInfo}</div>`;
             // Build detail HTML
             dom.detailContent.innerHTML = `
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="flex flex-col gap-3">
                         ${imagesHtml}
+                        <p class="text-xs text-gray-400 mt-1">Click any image to zoom</p>
                     </div>
                     <div class="flex flex-col justify-between">
                         <div>
@@ -1563,10 +1619,8 @@
 
         // ===== ORDER MODAL =====
         const initiateOrder = async (product) => {
-            if (!currentUser) { pendingProduct = product;
-                dom.loginRequiredModal.classList.remove('hidden'); return; }
-            if (product.stock === 'sold' || product.quantity <= 0) { showMessage("This product is out of stock.",
-                "warning"); return; }
+            if (!currentUser) { pendingProduct = product; dom.loginRequiredModal.classList.remove('hidden'); return; }
+            if (product.stock === 'sold' || product.quantity <= 0) { showMessage("This product is out of stock.", "warning"); return; }
             dom.orderProductId.value = product.id;
             dom.orderProductName.value = product.name;
             dom.orderProductPrice.value = product.price;
@@ -1592,15 +1646,13 @@
             const productName = dom.orderProductName.value;
             const productPrice = parseFloat(dom.orderProductPrice.value);
             const maxQuantity = parseInt(dom.orderMaxQuantity.value);
-            if (!fullName || !email || !phone || !quantity || !location) { showMessage(
-                    "Please fill all required fields", "error"); return; }
+            if (!fullName || !email || !phone || !quantity || !location) { showMessage("Please fill all required fields", "error"); return; }
             if (quantity > maxQuantity) { showMessage(`Only ${maxQuantity} item(s) available.`, "error"); return; }
             showLoader();
             try {
                 let existing = cart.find(i => i.id === productId);
                 if (existing) existing.quantity += quantity;
-                else cart.push({ id: productId, name: productName, price: productPrice, images: (allProducts.find(p =>
-                        p.id === productId)?.images) || [], quantity: quantity });
+                else cart.push({ id: productId, name: productName, price: productPrice, images: (allProducts.find(p => p.id === productId)?.images) || [], quantity: quantity });
                 saveCart();
                 dom.customerModal.classList.add('hidden');
                 dom.customerOrderForm.reset();
@@ -1609,12 +1661,9 @@
         };
 
         dom.closeCustomerModal.onclick = () => dom.customerModal.classList.add('hidden');
-        dom.closeLoginRequiredModal.onclick = () => { dom.loginRequiredModal.classList.add('hidden');
-            pendingProduct = null; };
-        dom.loginRequiredLoginBtn.onclick = () => { dom.loginRequiredModal.classList.add('hidden');
-            dom.loginModal.classList.remove('hidden'); };
-        dom.loginRequiredRegisterBtn.onclick = () => { dom.loginRequiredModal.classList.add('hidden');
-            dom.regModal.classList.remove('hidden'); };
+        dom.closeLoginRequiredModal.onclick = () => { dom.loginRequiredModal.classList.add('hidden'); pendingProduct = null; };
+        dom.loginRequiredLoginBtn.onclick = () => { dom.loginRequiredModal.classList.add('hidden'); dom.loginModal.classList.remove('hidden'); };
+        dom.loginRequiredRegisterBtn.onclick = () => { dom.loginRequiredModal.classList.add('hidden'); dom.regModal.classList.remove('hidden'); };
 
         // ===== FETCH PRODUCTS WITH CACHING =====
         const CACHE_KEY = 'products_cache';
@@ -1642,9 +1691,7 @@
                 applyFiltersAndRender();
                 renderRecentlyViewed();
                 renderRecommendations();
-                if (userRole === 'admin') { renderAdminList();
-                    fetchUsers();
-                    fetchOrders(); }
+                if (userRole === 'admin') { renderAdminList(); fetchUsers(); fetchOrders(); }
                 loadWishlist();
                 populateCategories();
                 return;
@@ -1655,8 +1702,7 @@
         // ===== POPULATE CATEGORIES =====
         const populateCategories = () => {
             const categories = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
-            dom.categoryFilter.innerHTML = '<option value="all">All</option>' + categories.map(c =>
-                `<option value="${c}">${c}</option>`).join('');
+            dom.categoryFilter.innerHTML = '<option value="all">All</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
         };
 
         // ===== ADMIN CRUD =====
@@ -1665,7 +1711,7 @@
             if (!allProducts.length) { dom.productList.innerHTML = '<div class="text-gray-500">No products</div>'; return; }
             dom.productList.innerHTML = allProducts.map(p =>
                 `<div class="flex justify-between items-center border-b border-gray-200 py-2"><div class="flex items-center gap-2"><img src="${p.images?.[0] || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><div><span class="text-gray-800"><strong class="text-amber-700">${escapeHtml(p.name)}</strong> - ${p.price.toLocaleString()} RWF</span><div class="text-xs text-gray-500">${p.category || 'No category'}</div></div><span class="ml-2 ${p.stock === 'available' ? 'text-green-600' : 'text-red-500'} text-xs">${p.stock === 'available' ? `In stock (${p.quantity})` : 'Out of stock'}</span></div><div><button class="edit-prod bg-amber-600 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>`
-                ).join('');
+            ).join('');
             dom.productList.querySelectorAll('.edit-prod').forEach(btn => btn.onclick = () => openEdit(btn.dataset.id));
             dom.productList.querySelectorAll('.del-prod').forEach(btn => btn.onclick = async () => {
                 if (confirm('Delete product?')) await deleteProduct(btn.dataset.id);
@@ -1698,9 +1744,7 @@
             dom.cancelEdit.classList.remove('hidden');
             const previewDiv = document.getElementById('existingImagesPreview');
             if (previewDiv && prod.images) {
-                previewDiv.innerHTML = prod.images.map(url =>
-                    `<div class="existing-image-item"><img src="${url}" class="image-preview"><span class="remove-image-btn" data-url="${url}">×</span></div>`
-                    ).join('');
+                previewDiv.innerHTML = prod.images.map(url => `<div class="existing-image-item"><img src="${url}" class="image-preview"><span class="remove-image-btn" data-url="${url}">×</span></div>`).join('');
             }
             currentImageUrls = prod.images ? [...prod.images] : [];
         };
@@ -1746,10 +1790,8 @@
                     const newUrls = await uploadMultipleImages(files);
                     images.push(...newUrls);
                 }
-                if (images.length === 0) { showMessage('Please add at least one image', 'error');
-                    hideLoader(); return; }
-                const productData = { name, category, price, description: desc, images, stock, quantity, sizes, colors,
-                    updatedAt: new Date() };
+                if (images.length === 0) { showMessage('Please add at least one image', 'error'); hideLoader(); return; }
+                const productData = { name, category, price, description: desc, images, stock, quantity, sizes, colors, updatedAt: new Date() };
                 if (editingId) {
                     await updateDoc(doc(db, "products", editingId), productData);
                     showMessage('Product updated', 'success');
@@ -1773,8 +1815,7 @@
                 reader.onload = (event) => {
                     const imgContainer = document.createElement('div');
                     imgContainer.className = 'existing-image-item';
-                    imgContainer.innerHTML =
-                        `<img src="${event.target.result}" class="image-preview"><span class="remove-image-btn">×</span>`;
+                    imgContainer.innerHTML = `<img src="${event.target.result}" class="image-preview"><span class="remove-image-btn">×</span>`;
                     previewDiv.appendChild(imgContainer);
                 };
                 reader.readAsDataURL(file);
@@ -1786,14 +1827,10 @@
             if (!dom.userTable) return;
             try {
                 const snap = await getDocs(collection(db, "users"));
-                let html =
-                    `<tr><th class="text-left text-amber-700">Name</th><th class="text-left text-amber-700">Email</th><th class="text-left text-amber-700">Role</th></tr>`;
-                snap.forEach(d => { const data = d.data();
-                    html +=
-                    `<tr><td class="py-1">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="py-1">${escapeHtml(data.email)}</td><td class="py-1">${escapeHtml(data.role||'user')}</td></tr>`; });
+                let html = `<tr><th class="text-left text-amber-700">Name</th><th class="text-left text-amber-700">Email</th><th class="text-left text-amber-700">Role</th></tr>`;
+                snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="py-1">${escapeHtml(data.email)}</td><td class="py-1">${escapeHtml(data.role||'user')}</td></tr>`; });
                 dom.userTable.innerHTML = html;
-                if (dom.perfStats) dom.perfStats.innerHTML =
-                    `<div class="p-3"><p class="font-semibold text-amber-700">📊 Performance</p><p>Users: ${snap.size}</p><p>Products: ${allProducts.length}</p><p>Orders in cart: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
+                if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-700">📊 Performance</p><p>Users: ${snap.size}</p><p>Products: ${allProducts.length}</p><p>Orders in cart: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
             } catch (e) { console.warn(e); }
         };
 
@@ -1802,17 +1839,14 @@
             try {
                 const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
                 const snap = await getDocs(q);
-                if (snap.empty) { dom.ordersList.innerHTML =
-                    '<tr><td colspan="8" class="text-center py-4 text-gray-500">No orders yet</td></tr>'; return; }
+                if (snap.empty) { dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-500">No orders yet</td></tr>'; return; }
                 let html = '';
                 snap.forEach(doc => {
                     const o = doc.data();
-                    html +=
-                        `<tr class="border-b border-gray-200"><td class="p-2">${escapeHtml(o.fullName||o.customer_name||'')}</td><td class="p-2">${escapeHtml(o.email||o.customer_email||'')}</td><td class="p-2">${escapeHtml(o.phone||'')}</td><td class="p-2">${escapeHtml(o.productName||o.items?.map(i=>i.name).join(', ')||'')}</td><td class="p-2">${o.quantity||o.items?.length||''}</td><td class="p-2">${escapeHtml(o.location||'')}</td><td class="p-2">${escapeHtml(o.notes||'')}</td><td class="p-2">${new Date(o.createdAt?.toDate()).toLocaleString()}</td></tr>`;
+                    html += `<tr class="border-b border-gray-200"><td class="p-2">${escapeHtml(o.fullName||o.customer_name||'')}</td><td class="p-2">${escapeHtml(o.email||o.customer_email||'')}</td><td class="p-2">${escapeHtml(o.phone||'')}</td><td class="p-2">${escapeHtml(o.productName||o.items?.map(i=>i.name).join(', ')||'')}</td><td class="p-2">${o.quantity||o.items?.length||''}</td><td class="p-2">${escapeHtml(o.location||'')}</td><td class="p-2">${escapeHtml(o.notes||'')}</td><td class="p-2">${new Date(o.createdAt?.toDate()).toLocaleString()}</td></tr>`;
                 });
                 dom.ordersList.innerHTML = html;
-            } catch (e) { console.warn(e);
-                dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center text-red-500">Error loading orders<tr></tr>'; }
+            } catch (e) { console.warn(e); dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center text-red-500">Error loading orders<tr></tr>'; }
         };
 
         // ===== AUTH =====
@@ -1823,14 +1857,11 @@
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, pwd);
                 const role = email === 'admin@cozylifestyle.com' ? 'admin' : 'user';
-                await setDoc(doc(db, "users", cred.user.uid), { firstName: first, lastName: last, email, role,
-                    createdAt: new Date() });
+                await setDoc(doc(db, "users", cred.user.uid), { firstName: first, lastName: last, email, role, createdAt: new Date() });
                 showMessage(`Welcome ${first}! Your account has been created.`, 'success');
                 dom.regModal.classList.add('hidden');
-                if (pendingProduct) { initiateOrder(pendingProduct);
-                    pendingProduct = null; }
-            } catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader();
-                dom.regSubmitBtn.classList.remove('loading-btn'); }
+                if (pendingProduct) { initiateOrder(pendingProduct); pendingProduct = null; }
+            } catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); dom.regSubmitBtn.classList.remove('loading-btn'); }
         };
 
         const login = async (email, pwd) => {
@@ -1840,10 +1871,8 @@
                 await signInWithEmailAndPassword(auth, email, pwd);
                 showMessage('Login successful! Welcome back.', 'success');
                 dom.loginModal.classList.add('hidden');
-                if (pendingProduct) { initiateOrder(pendingProduct);
-                    pendingProduct = null; }
-            } catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader();
-                dom.loginSubmitBtn.classList.remove('loading-btn'); }
+                if (pendingProduct) { initiateOrder(pendingProduct); pendingProduct = null; }
+            } catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); dom.loginSubmitBtn.classList.remove('loading-btn'); }
         };
 
         const logout = () => {
@@ -1892,8 +1921,7 @@
                 const snap = await getDoc(doc(db, "users", currentUser.uid));
                 if (snap.exists()) {
                     const d = snap.data();
-                    dom.userInfo.innerHTML =
-                        `<div class="p-4 bg-amber-50 rounded-xl"><strong class="text-amber-700">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br>${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`;
+                    dom.userInfo.innerHTML = `<div class="p-4 bg-amber-50 rounded-xl"><strong class="text-amber-700">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br>${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`;
                     dom.contactSpan.innerText = d.email;
                 } else dom.userInfo.innerHTML = '<p>Profile error</p>';
             } catch (e) { showMessage('Profile load error', 'error'); }
@@ -1915,8 +1943,7 @@
             if (user) {
                 try {
                     const snap = await getDoc(doc(db, "users", user.uid));
-                    userRole = snap.exists() ? snap.data().role : (user.email === 'admin@cozylifestyle.com' ? 'admin' :
-                        'user');
+                    userRole = snap.exists() ? snap.data().role : (user.email === 'admin@cozylifestyle.com' ? 'admin' : 'user');
                 } catch (e) { userRole = 'user'; }
             } else userRole = 'guest';
             updateNav();
@@ -1941,31 +1968,24 @@
         dom.logoutBtn.onclick = logout;
         dom.closeReg.onclick = () => dom.regModal.classList.add('hidden');
         dom.closeLogin.onclick = () => dom.loginModal.classList.add('hidden');
-        dom.cartBtn.onclick = () => { dom.cartSidebar.classList.remove('translate-x-full');
-            dom.cartOverlay.classList.remove('hidden'); };
-        dom.closeCart.onclick = () => { dom.cartSidebar.classList.add('translate-x-full');
-            dom.cartOverlay.classList.add('hidden'); };
-        dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.add('translate-x-full');
-            dom.cartOverlay.classList.add('hidden'); };
+        dom.cartBtn.onclick = () => { dom.cartSidebar.classList.remove('translate-x-full'); dom.cartOverlay.classList.remove('hidden'); };
+        dom.closeCart.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
+        dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
         dom.regForm.onsubmit = (e) => {
             e.preventDefault();
             const pwd = document.getElementById('regPassword').value;
             const cp = document.getElementById('regConfirmPassword').value;
             if (pwd !== cp) { showMessage('Passwords do not match', 'error'); return; }
-            register(document.getElementById('regEmail').value, pwd, document.getElementById('regFirstName').value,
-                document.getElementById('regLastName').value);
+            register(document.getElementById('regEmail').value, pwd, document.getElementById('regFirstName').value, document.getElementById('regLastName').value);
         };
         dom.loginForm.onsubmit = (e) => {
             e.preventDefault();
             login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
         };
-        dom.switchToRegister.onclick = () => { dom.loginModal.classList.add('hidden');
-            dom.regModal.classList.remove('hidden'); };
+        dom.switchToRegister.onclick = () => { dom.loginModal.classList.add('hidden'); dom.regModal.classList.remove('hidden'); };
         dom.backToHomeBtn.onclick = showHome;
-        document.getElementById('heroShopBtn').onclick = () => document.getElementById('productsGrid')
-        .scrollIntoView({ behavior: 'smooth' });
-        document.getElementById('heroExploreBtn').onclick = () => document.getElementById('contact-section')
-        .scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('heroShopBtn').onclick = () => document.getElementById('productsGrid').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('heroExploreBtn').onclick = () => document.getElementById('contact-section').scrollIntoView({ behavior: 'smooth' });
 
         // ===== INIT =====
         loadContactInfo();
